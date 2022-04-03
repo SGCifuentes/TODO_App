@@ -1,24 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import "./App.css";
+import { fetchTodoRequest } from "./store/todo/actions";
+import {
+  getErrorSelector,
+  getPendingSelector,
+  getTodoSelector,
+} from "./store/todo/selectors";
 
 function App() {
+  const dispatch = useDispatch();
+  const pending = useSelector(getPendingSelector);
+  const todos = useSelector(getTodoSelector);
+  const error = useSelector(getErrorSelector);
+
+  const handleFetchRequest = () => {
+    dispatch(fetchTodoRequest());
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ padding: "15px" }}>
+      {todos.length < 1 ? (
+        <>
+          <h3>Desea cargar los TODOS?</h3>
+          <button onClick={() => handleFetchRequest()}>Obtener TODO's</button>
+        </>
+      ) : (
+        <h3>TODO's</h3>
+      )}
+      {pending ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>Error</div>
+      ) : (
+        todos.map((todo, index) => (
+          <div style={{ marginBottom: "10px" }} key={todo.id}>
+            {`${++index}. ${todo.title}`}
+          </div>
+        ))
+      )}
     </div>
   );
 }
